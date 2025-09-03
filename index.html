@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>My Private Planner</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to right, #74ebd5, #ACB6E5);
+      color: #333;
+      text-align: center;
+      padding: 50px;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    textarea {
+      width: 80%;
+      height: 100px;
+      padding: 15px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      resize: none;
+    }
+
+    button {
+      margin: 10px 5px;
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    #status {
+      margin-top: 10px;
+      color: green;
+      font-weight: bold;
+    }
+
+    #planList {
+      margin-top: 30px;
+      width: 80%;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: left;
+    }
+
+    .planItem {
+      background: white;
+      padding: 15px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .planText {
+      word-break: break-word;
+      flex: 1;
+    }
+
+    .deleteBtn {
+      background-color: transparent;
+      border: none;
+      cursor: pointer;
+      font-size: 20px;
+      color: #e74c3c;
+      margin-left: 10px;
+    }
+
+    .deleteBtn:hover {
+      color: #c0392b;
+    }
+  </style>
+</head>
+<body>
+  <h1>My Private Planner</h1>
+  
+  <textarea id="myPlan" placeholder="Write a new plan..."></textarea>
+  <br>
+  <button onclick="savePlan()">➕ Add Plan</button>
+  
+  <p id="status"></p>
+
+  <div id="planList">
+    <!-- Plans will appear here -->
+  </div>
+
+  <script>
+    // Load plans from localStorage
+    function loadPlans() {
+      const plans = JSON.parse(localStorage.getItem("plans")) || [];
+      const planList = document.getElementById("planList");
+      planList.innerHTML = ""; // clear previous
+
+      if (plans.length === 0) {
+        planList.innerHTML = "<p>No saved plans yet.</p>";
+        return;
+      }
+
+      plans.forEach((plan, index) => {
+        const item = document.createElement("div");
+        item.className = "planItem";
+
+        const text = document.createElement("div");
+        text.className = "planText";
+        text.innerText = plan;
+
+        const del = document.createElement("button");
+        del.className = "deleteBtn";
+        del.innerHTML = "🧺";
+        del.onclick = () => deletePlan(index);
+
+        item.appendChild(text);
+        item.appendChild(del);
+        planList.appendChild(item);
+      });
+    }
+
+    // Save new plan
+    function savePlan() {
+      const textarea = document.getElementById("myPlan");
+      const newPlan = textarea.value.trim();
+
+      if (newPlan === "") {
+        document.getElementById("status").innerText = "⚠️ Plan cannot be empty.";
+        return;
+      }
+
+      const plans = JSON.parse(localStorage.getItem("plans")) || [];
+      plans.push(newPlan);
+      localStorage.setItem("plans", JSON.stringify(plans));
+      
+      textarea.value = "";
+      document.getElementById("status").innerText = "✅ Plan added!";
+      loadPlans();
+    }
+
+    // Delete individual plan
+    function deletePlan(index) {
+      const plans = JSON.parse(localStorage.getItem("plans")) || [];
+      plans.splice(index, 1);
+      localStorage.setItem("plans", JSON.stringify(plans));
+      loadPlans();
+    }
+
+    // Load on page load
+    loadPlans();
+  </script>
+</body>
+</html>
